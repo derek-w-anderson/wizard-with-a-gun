@@ -8,6 +8,7 @@
 	{
 		public var leftArrow:Boolean = false;
 		public var rightArrow:Boolean = false;
+		public var upArrow:Boolean = false;
 		public var wizard:MovieClip;
 		
 		public function Main() 
@@ -15,7 +16,7 @@
 			wizard = new Wizard();
 			wizard.x = (stage.stageWidth / 2) - (wizard.width / 2);
 			wizard.y = 400;
-			addChild(wizard);
+			addChildAt(wizard, 0);
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onDownKey);
 			stage.addEventListener(KeyboardEvent.KEY_UP, onUpKey);
@@ -23,18 +24,16 @@
 		
 		private function onDownKey(e:KeyboardEvent): void 
 		{
-			if (e.keyCode == Keyboard.LEFT)
-				leftArrow = true;
-			else if (e.keyCode == Keyboard.RIGHT)
-				rightArrow = true;
+			if (e.keyCode == Keyboard.LEFT) leftArrow = true;
+			else if (e.keyCode == Keyboard.RIGHT) rightArrow = true;
+			else if (e.keyCode == Keyboard.UP) upArrow = true;
 		}
 		
 		private function onUpKey(e:KeyboardEvent): void
 		{
-			if (e.keyCode == Keyboard.LEFT)
-				leftArrow = false;
-			else if (e.keyCode == Keyboard.RIGHT)
-				rightArrow = false;
+			if (e.keyCode == Keyboard.LEFT) leftArrow = false;
+			else if (e.keyCode == Keyboard.RIGHT) rightArrow = false;
+			else if (e.keyCode == Keyboard.UP) upArrow = true;
 		}
 	}
 }

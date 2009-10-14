@@ -1,51 +1,62 @@
 ﻿package
 {
-	import flash.display.MovieClip;
+	import flash.display.*;
 	import flash.events.Event;
+	import flash.geom.Matrix;
 	
 	public class Wizard extends MovieClip
 	{
 		public var SPEED = 20;
+		public var arm;
 		public var direction;
 		
 		public function Wizard() 
-		{						
+		{							
+			arm = new Arm();
+			arm.x = 41;
+			arm.y = 52.5;
+			arm.gotoAndStop("close");
+			addChildAt(arm, 1);
+			
 			gotoAndStop("standRight");
-			direction = "right";
 			addEventListener(Event.ENTER_FRAME, move);
 		}
 
 		private function move(e:Event): void
-		{						
-			var left = MovieClip(parent).leftArrow;
-			var right = MovieClip(parent).rightArrow;
-			
-			if (right) {
+		{								
+			if (stage.mouseX > this.x) 
 				direction = "right";
+			else 
+				direction = "left";
+			
+			if (MovieClip(parent).rightArrow) {
 				loopRunAnimation();
 				this.x += SPEED;
 			
-			} else if (left) {
-				direction = "left";
+			} else if (MovieClip(parent).leftArrow) {
 				loopRunAnimation();
 				this.x -= SPEED;
 			
 			} else {
 				if (direction == "left") 
 					gotoAndStop("standLeft");
-				else 
+				else {
 					gotoAndStop("standRight");
+					setChildIndex(arm, 1);
+				}
 			}
 		}
 		
 		private function loopRunAnimation(): void
 		{
-			var cur = currentLabel;
-			if (cur == "runRightComplete" || cur == "runLeftComplete" || cur == "standRight" || cur == "standLeft") {
-				if (direction == "right") 
+			var lab = currentLabel;
+			if (lab == "runRightComplete" || lab == "runLeftComplete" || lab == "standRight" || lab == "standLeft") {
+				if (direction == "right") {
 					gotoAndPlay("runRight");
-				else
+					setChildIndex(arm, 1);
+				} else {
 					gotoAndPlay("runLeft");
+				}
 			}
 		}
 	}
