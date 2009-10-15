@@ -6,17 +6,26 @@
 	
 	public class Main extends MovieClip
 	{
+		public const GRAVITY = 1;
+		
 		public var leftArrow:Boolean = false;
 		public var rightArrow:Boolean = false;
 		public var upArrow:Boolean = false;
+		
+		public var ground:MovieClip;
 		public var wizard:MovieClip;
 		
 		public function Main() 
 		{						
+			ground = new Ground();
+			ground.x = 0;
+			ground.y = 550;
+			addChildAt(ground, 0);
+		
 			wizard = new Wizard();
 			wizard.x = (stage.stageWidth / 2) - (wizard.width / 2);
 			wizard.y = 400;
-			addChildAt(wizard, 0);
+			addChild(wizard);
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onDownKey);
 			stage.addEventListener(KeyboardEvent.KEY_UP, onUpKey);
@@ -33,7 +42,7 @@
 		{
 			if (e.keyCode == Keyboard.LEFT) leftArrow = false;
 			else if (e.keyCode == Keyboard.RIGHT) rightArrow = false;
-			else if (e.keyCode == Keyboard.UP) upArrow = true;
+			else if (e.keyCode == Keyboard.UP) upArrow = false;
 		}
 	}
 }
