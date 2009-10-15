@@ -7,8 +7,13 @@
 	public class Wizard extends MovieClip
 	{
 		public var SPEED = 20;
+		public var JUMP_HEIGHT:Number = 12;
+		
 		public var arm;
-		public var direction;
+		public var direction:String;
+		
+		public var jumping:Boolean;
+		public var dy:Number = 0;
 		
 		public function Wizard() 
 		{							
@@ -23,7 +28,33 @@
 		}
 
 		private function move(e:Event): void
-		{								
+		{
+			if (HitDetect.isColliding(MovieClip(parent).ground, this, parent, true) &&
+				(MovieClip(parent).upArrow))
+			{
+				jumping = true;
+			}
+			
+			dy = verticalMovement();
+			this.y += dy;
+			
+			horizontalMovement();
+		}
+		
+		private function verticalMovement(): Number
+		{		
+			if (jumping) {
+				jumping = false;
+				return -JUMP_HEIGHT;
+			} else if (!HitDetect.isColliding(MovieClip(parent).ground, this, parent, true)) {
+				return dy + MovieClip(parent).GRAVITY;
+			} else {
+				return 0;
+			}
+		}
+		
+		private function horizontalMovement(): void
+		{
 			if (stage.mouseX > this.x) 
 				direction = "right";
 			else 
@@ -38,9 +69,9 @@
 				this.x -= SPEED;
 			
 			} else {
-				if (direction == "left") 
+				if (direction == "left") {
 					gotoAndStop("standLeft");
-				else {
+				} else {
 					gotoAndStop("standRight");
 					setChildIndex(arm, 1);
 				}
