@@ -8,11 +8,14 @@
 	{
 		public var SPEED = 20;
 		public var JUMP_HEIGHT:Number = 12;
+		public var LOOP_STATES = new Array("runRightComplete", "runLeftComplete", "standRight", "standLeft");
 		
-		public var arm;
+		public var arm:MovieClip;
 		public var direction:String;
+		public var directionChanged:Boolean;
 		
 		public var jumping:Boolean;
+		public var baseY:Number;
 		public var dy:Number = 0;
 		
 		public function Wizard() 
@@ -29,43 +32,44 @@
 
 		private function move(e:Event): void
 		{
-			if (HitDetect.isColliding(MovieClip(parent).ground, this, parent, true) &&
-				(MovieClip(parent).upArrow))
-			{
+			if (baseY == this.y && MovieClip(parent).upArrow) {
 				jumping = true;
 			}
-			
-			dy = verticalMovement();
-			this.y += dy;
-			
-			horizontalMovement();
+			moveVertically();
+			moveHorizontally();
 		}
 		
-		private function verticalMovement(): Number
+		private function moveVertically(): void
 		{		
 			if (jumping) {
 				jumping = false;
-				return -JUMP_HEIGHT;
-			} else if (!HitDetect.isColliding(MovieClip(parent).ground, this, parent, true)) {
-				return dy + MovieClip(parent).GRAVITY;
+				dy = -JUMP_HEIGHT;
+			} else if (baseY != this.y) {
+				dy += MovieClip(parent).GRAVITY;
 			} else {
-				return 0;
+				dy = 0;
 			}
+			this.y += dy;
 		}
 		
-		private function horizontalMovement(): void
+		private function moveHorizontally(): void
 		{
-			if (stage.mouseX > this.x) 
+			if (stage.mouseX > this.x) {
+				if (direction == "left") directionChanged = true;
+				else directionChanged = false;
 				direction = "right";
-			else 
+			} else { 
+				if (direction == "right") directionChanged = true;
+				else directionChanged = false;
 				direction = "left";
+			}
 			
 			if (MovieClip(parent).rightArrow) {
-				loopRunAnimation();
+				setAnimation();
 				this.x += SPEED;
 			
 			} else if (MovieClip(parent).leftArrow) {
-				loopRunAnimation();
+				setAnimation();
 				this.x -= SPEED;
 			
 			} else {
@@ -78,16 +82,27 @@
 			}
 		}
 		
+		private function setAnimation(): void
+		{
+			if (directionChanged) {
+				loopRunAnimation();
+			} else {
+				for (var i = 0; i < LOOP_STATES.length; i++) {
+					if (currentLabel == LOOP_STATES[i]) {
+						loopRunAnimation();
+						break;
+					}
+				}
+			}
+		}
+		
 		private function loopRunAnimation(): void
 		{
-			var lab = currentLabel;
-			if (lab == "runRightComplete" || lab == "runLeftComplete" || lab == "standRight" || lab == "standLeft") {
-				if (direction == "right") {
-					gotoAndPlay("runRight");
-					setChildIndex(arm, 1);
-				} else {
-					gotoAndPlay("runLeft");
-				}
+			if (direction == "right") {
+				gotoAndPlay("runRight");
+				setChildIndex(arm, 1);
+			} else {
+				gotoAndPlay("runLeft");
 			}
 		}
 	}

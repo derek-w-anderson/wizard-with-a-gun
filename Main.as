@@ -6,7 +6,7 @@
 	
 	public class Main extends MovieClip
 	{
-		public const GRAVITY = 1;
+		public const GRAVITY = 2; 
 		
 		public var leftArrow:Boolean = false;
 		public var rightArrow:Boolean = false;
@@ -19,12 +19,12 @@
 		{						
 			ground = new Ground();
 			ground.x = 0;
-			ground.y = 550;
+			ground.y = stage.stageHeight - 50;
 			addChildAt(ground, 0);
 		
 			wizard = new Wizard();
 			wizard.x = (stage.stageWidth / 2) - (wizard.width / 2);
-			wizard.y = 400;
+			wizard.y = wizard.baseY = ground.y - wizard.height + 5;
 			addChild(wizard);
 			
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onDownKey);
