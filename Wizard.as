@@ -8,8 +8,8 @@
 	{
 		public var JUMP_HEIGHT:Number = 12;
 		public var LOOP_STATES = new Array("runRightComplete", "runLeftComplete", "standRight", "standLeft");
-		public var HORIZONTAL_SPEED = 22;
-		public var VERTICAL_SPEED = 6;
+		public var HORIZONTAL_SPEED = 20;
+		public var VERTICAL_SPEED = 8;
 		public var HEIGHT;
 		
 		public var lowerBoundary:Number;
@@ -117,12 +117,17 @@
 		{
 			if (MovieClip(parent).rightButton) {
 				run();
-				this.x += HORIZONTAL_SPEED;
+				if (!MovieClip(parent).haltMovement) {
+					this.x += HORIZONTAL_SPEED;
+				}
 				return true;
 				
 			} else if (MovieClip(parent).leftButton) {
 				run();
 				this.x -= HORIZONTAL_SPEED;
+				if (this.x < -50) {
+					this.x = -50;
+				}
 				return true;
 				
 			} else {
