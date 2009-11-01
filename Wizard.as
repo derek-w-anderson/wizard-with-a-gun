@@ -10,7 +10,11 @@
 		public var LOOP_STATES = new Array("runRightComplete", "runLeftComplete", "standRight", "standLeft");
 		public var HORIZONTAL_SPEED = 20;
 		public var VERTICAL_SPEED = 8;
+		
 		public var HEIGHT;
+		public var HP:int;
+		public var ammoLeft:int;
+		public var maxAmmo:int;
 		
 		public var lowerBoundary:Number;
 		public var upperBoundary:Number;
@@ -27,6 +31,8 @@
 			this.lowerBoundary = lowerBoundary;
 			this.upperBoundary = upperBoundary;
 			HEIGHT = this.height;
+			HP = 10;
+			ammoLeft = maxAmmo = 999;
 		
 			arm = new Arm();
 			arm.x = 41;
@@ -54,7 +60,7 @@
 			
 			if (!(movedVertically || movedHorizontally)) {
 				stand();
-			}
+			} 
 		}
 		
 		private function setDirection(): void 
@@ -167,6 +173,12 @@
 			} else {
 				gotoAndPlay("runLeft");
 			}
+		}
+		
+		public function fire(): void
+		{
+			ammoLeft -= 1;
+			arm.fire();
 		}
 	}
 }

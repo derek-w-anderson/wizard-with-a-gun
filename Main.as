@@ -4,6 +4,7 @@
 	import flash.events.*;
 	import flash.media.*;
 	import flash.ui.Keyboard;
+	import flash.ui.Mouse;
 	
 	public class Main extends MovieClip
 	{
@@ -23,6 +24,9 @@
 		public var fg1:MovieClip;
 		public var fg2:MovieClip;
 		public var fg3:MovieClip;
+		public var cursor:MovieClip;
+		public var lifeBar:MovieClip;
+		public var weaponPanel:MovieClip;
 		
 		public var wizard:MovieClip;
 		public var haltMovement:Boolean = false;
@@ -33,7 +37,10 @@
 			createGround();						
 			createWizard();
 			createForeground();
+			createHUD();
+			createCursor();
 			
+			stage.addEventListener(MouseEvent.CLICK, onDownMouse);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onDownKey);
 			stage.addEventListener(KeyboardEvent.KEY_UP, onUpKey);
 			this.addEventListener(Event.ENTER_FRAME, scrollStage);
@@ -86,6 +93,33 @@
 			addChild(fg3);
 		}
 		
+		private function createHUD(): void
+		{
+			lifeBar = new LifeBar();
+			lifeBar.scaleX = lifeBar.scaleY = .35;
+			lifeBar.x = 10;
+			lifeBar.y = 10;
+			addChild(lifeBar);
+			
+			weaponPanel = new WeaponPanel();
+			weaponPanel.scaleX = weaponPanel.scaleY = .35;
+			weaponPanel.x = stage.stageWidth - weaponPanel.width - 20;
+			weaponPanel.y = 24;
+			addChild(weaponPanel);
+		}
+		
+		private function createCursor(): void
+		{
+			Mouse.hide();			
+			cursor = new Cursor();
+			addChild(cursor);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, followMouse);
+			function followMouse(e:MouseEvent): void {
+				cursor.x = mouseX;
+				cursor.y = mouseY;
+			}
+		}
+		
 		private function scrollStage(e:Event): void
 		{
 			setWizardMovement();
@@ -108,27 +142,32 @@
 			}
 		}
 		
-      public function playMusic(): void
-      {
-         musicChannel = music.play();
-         musicChannel.addEventListener(Event.SOUND_COMPLETE, loopMusic);
-      }
+		public function playMusic(): void
+		{
+			musicChannel = music.play();
+			musicChannel.addEventListener(Event.SOUND_COMPLETE, loopMusic);
+		}
 
-      private function loopMusic(e:Event): void
-      {
-         if (musicChannel != null) {
-            musicChannel.removeEventListener(Event.SOUND_COMPLETE, loopMusic);
-            playMusic();
-         }
-      }
+		private function loopMusic(e:Event): void
+		{
+			if (musicChannel != null) {
+				musicChannel.removeEventListener(Event.SOUND_COMPLETE, loopMusic);
+				playMusic();
+			}
+		}
 
-      public function stopMusic(): void
-      {
-         if (musicChannel != null) {
-            musicChannel.stop();
-            musicChannel.removeEventListener(Event.SOUND_COMPLETE, loopMusic);
-         }
-      }
+		public function stopMusic(): void
+		{
+			if (musicChannel != null) {
+				musicChannel.stop();
+				musicChannel.removeEventListener(Event.SOUND_COMPLETE, loopMusic);
+			}
+		}
+		
+		private function onDownMouse(e:MouseEvent): void
+		{
+			wizard.fire();
+		}
 		
 		private function onDownKey(e:KeyboardEvent): void 
 		{
