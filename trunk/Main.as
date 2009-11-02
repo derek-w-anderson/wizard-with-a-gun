@@ -9,6 +9,10 @@
 	public class Main extends MovieClip
 	{
 		public const GRAVITY = 2; 
+		public const MAX_ENEMIES = 3;
+		
+		public var lowerBoundary;
+		public var upperBoundary;
 		
 		private var music:Sound = new Sound();
 		private var musicChannel:SoundChannel;
@@ -28,6 +32,7 @@
 		public var lifeBar:MovieClip;
 		public var weaponPanel:MovieClip;
 		
+		public var zombies:Array = new Array(MAX_ENEMIES);
 		public var wizard:MovieClip;
 		public var haltMovement:Boolean = false;
 		
@@ -43,7 +48,7 @@
 			stage.addEventListener(MouseEvent.CLICK, onDownMouse);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, onDownKey);
 			stage.addEventListener(KeyboardEvent.KEY_UP, onUpKey);
-			this.addEventListener(Event.ENTER_FRAME, scrollStage);
+			this.addEventListener(Event.ENTER_FRAME, gameLoop);
 			
 			//playMusic();
 		}
@@ -62,6 +67,9 @@
 			mg.x = 0;
 			mg.y = 0;
 			addChild(mg);
+			
+			lowerBoundary = stage.stageHeight;
+			upperBoundary = 325;
 		}
 		
 		private function createWizard(): void
@@ -96,13 +104,13 @@
 		private function createHUD(): void
 		{
 			lifeBar = new LifeBar();
-			lifeBar.scaleX = lifeBar.scaleY = .35;
+			lifeBar.scaleX = lifeBar.scaleY = 0.35;
 			lifeBar.x = 10;
 			lifeBar.y = 10;
 			addChild(lifeBar);
 			
 			weaponPanel = new WeaponPanel();
-			weaponPanel.scaleX = weaponPanel.scaleY = .35;
+			weaponPanel.scaleX = weaponPanel.scaleY = 0.35;
 			weaponPanel.x = stage.stageWidth - weaponPanel.width - 20;
 			weaponPanel.y = 24;
 			addChild(weaponPanel);
@@ -120,17 +128,38 @@
 			}
 		}
 		
-		private function scrollStage(e:Event): void
+		private function gameLoop(e:Event): void
 		{
 			setWizardMovement();
+			scrollStage();
 			
-			if (haltMovement && rightButton) {
-				bg.x -= wizard.HORIZONTAL_SPEED / 2;
-				mg.x -= wizard.HORIZONTAL_SPEED;
-				fg1.x -= wizard.HORIZONTAL_SPEED * 3;
-				fg2.x -= wizard.HORIZONTAL_SPEED * 3;
-				fg3.x -= wizard.HORIZONTAL_SPEED * 3;
+			for (var i = 0; i < MAX_ENEMIES; i++) 
+			{				
+				/* Spawn a zombie if necessary. */
+				if (zombies[i] == null) { 
+					var zombie = new Zombie();
+					zombie.scaleX = 0.325;
+					zombie.scaleY = 0.25;
+					zombie.x = stage.stageWidth + zombie.width; // Spawn the zombie off-stage. 
+					zombie.y = (Math.random() * (lowerBoundary - upperBoundary)) + upperBoundary - zombie.height + 20; 
+					zombies[i] = zombie;
+					addChild(zombie);
+					
+				/* Damage the wizard if a zombie is hitting him. */
+				} else if (HitDetect.isColliding(zombies[i], wizard, this, true)) {
+					wizard.HP -= 1;
+				
+				/* Remove a zombie if it's off-stage. */
+				} else if (zombies[i].x <= -zombies[i].width) {
+					zombies[i].remove();
+					delete zombies[i];
+				}
 			}
+			
+			setChildIndex(fg1, numChildren - 1);
+			setChildIndex(fg2, numChildren - 1);
+			setChildIndex(fg3, numChildren - 1);
+			setChildIndex(cursor, numChildren - 1);
 		}
 		
 		private function setWizardMovement(): void
@@ -139,6 +168,30 @@
 				haltMovement = true;
 			} else {
 				haltMovement = false;
+			}
+		}
+		
+		private function scrollStage(): void
+		{			
+			if (haltMovement && rightButton) {
+				bg.x -= wizard.HORIZONTAL_SPEED / 2;
+				mg.x -= wizard.HORIZONTAL_SPEED;
+				fg1.x -= wizard.HORIZONTAL_SPEED * 3;
+				fg2.x -= wizard.HORIZONTAL_SPEED * 3;
+				fg3.x -= wizard.HORIZONTAL_SPEED * 3;
+				
+				for (var i = 0; i < MAX_ENEMIES; i++) {
+					if (zombies[i]) {
+						zombies[i].CURRENT_HORIZONTAL_SPEED = zombies[i].HORIZONTAL_SPEED * 3;
+					}
+				}
+				
+			} else {
+				for (var j = 0; j < MAX_ENEMIES; j++) {
+					if (zombies[i]) {
+						zombies[i].CURRENT_HORIZONTAL_SPEED = zombies[i].HORIZONTAL_SPEED;
+					}
+				}
 			}
 		}
 		
