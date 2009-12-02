@@ -22,19 +22,39 @@
 			if (x < 0 || x > stage.stageWidth || y < 0 || y > stage.stageHeight) {
 				remove();
 			} else {
+				var hit:Boolean = false;
+				
+				/* Handle collision detection with the boss. */
+				if (MovieClip(parent).level == 2 && MovieClip(parent).bossSpawned && !MovieClip(parent).bossDead) {
+					var boss = MovieClip(parent).boss;
+					if (HitDetect.isColliding(this, boss, parent, true)) {
+						boss.hit();
+						if (boss.HP <= 0) {
+							MovieClip(parent).bossDead = true;
+							boss.remove();
+						}
+						hit = true;
+					}
+				} 
+				
+				/* Handle collision detection with normal enemies. */
 				var zombies = MovieClip(parent).zombies;
 				for (var i = 0; i < zombies.length; i++) {
 					try {
 						if (HitDetect.isColliding(this, zombies[i], parent, true)) {
 							zombies[i].hit();
 							if (zombies[i].HP <= 0) {
+								MovieClip(parent).killCount++;
 								parent.removeChild(zombies[i]);
-								delete zombies[i]
-								remove();
+								delete zombies[i];
 							}
+							hit = true;
 						}
 					} catch (error) {}
 				}
+				
+				if (hit)
+					remove();
 			}
 		}
 		

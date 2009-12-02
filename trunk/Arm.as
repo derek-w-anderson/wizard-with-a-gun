@@ -59,5 +59,13 @@
 			}
 			parent.parent.addChild(bullet);
 		}
+		
+		public function remove(): void
+		{
+			try {
+				removeEventListener(Event.ENTER_FRAME, move);
+				parent.removeChild(this);
+			} catch (error) {}
+		}
 	}
 }

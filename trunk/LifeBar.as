@@ -22,5 +22,11 @@
 			}
 			this.gotoAndStop(position);
 		}
+		
+		public function remove(): void
+		{
+			removeEventListener(Event.ENTER_FRAME, setBar);
+			parent.removeChild(this);
+		}
 	}
 }
