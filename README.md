@@ -1,10 +1,10 @@
-###Credits
+# Credits
 
 * Derek Anderson (Programming)
 * Benjamin Ellis (Art & Music)
 * Robert Holiday (Enemy Design)
 
-###Screenshots
+# Screenshots
 
 ![Title Screen](http://i.imgur.com/SxTed.png)
 
